@@ -2,5 +2,5 @@
     <string name="app_name">DemoApplication</string>
     <string name="welcome_note">Welcome to the Application. Please enter the text to save in local storage.</string>
     <string name="save_text">Save Text</string>
-    <string name="read_pref">Read Shared Preference</string>
+    <string name="read_pref">Read Saved Text</string>
 </resources>

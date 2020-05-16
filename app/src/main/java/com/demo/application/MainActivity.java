@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,26 +41,58 @@ public class MainActivity extends AppCompatActivity {
         EditText editTextToSave = (EditText) findViewById(R.id.editTextToSave);
         String message = editTextToSave.getText().toString();
 
-        //writing data to shared preference
 
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("Name", "DemoApplication");
-        Log.d("Name", "DemoApplication");
-        editor.putString("Message", message);
-        Log.d("Message", message);
-        editor.commit();
+        try {
+
+            //writing data to shared preference
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("Name", "DemoApplication");
+            Log.d("Name", "DemoApplication");
+            editor.putString("Message", message);
+            Log.d("Message", message);
+            editor.commit();
+
+            //writing to a file in internal storage
 
 
-        Toast.makeText(getApplicationContext(), "Message Saved to shared prefe s!!" , Toast.LENGTH_LONG).show();
+            FileOutputStream fOut = openFileOutput("DemoAppFile",MODE_PRIVATE); //DemoAppFile is the filename to save data to
+            fOut.write(message.getBytes());
+            fOut.close();
+
+            Toast.makeText(getBaseContext(),"Message Saved to file and shared pref",Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+
     }
 
     public void readMessage(View view) {
-        //reading from shared preference
-        String messageInSharedPref = new String();
-        Map<String, ?> sharedPrefData = sharedPref.getAll();
-        for (Map.Entry<String,?> msg : sharedPrefData.entrySet())
-            messageInSharedPref += "Key = " + msg.getKey() + ", Value = " + msg.getValue() + "\n";
-        Toast.makeText(getApplicationContext(), messageInSharedPref , Toast.LENGTH_LONG).show();
+
+        try {
+            //reading from shared preference
+
+            String messageInSharedPref = new String();
+            Map<String, ?> sharedPrefData = sharedPref.getAll();
+            for (Map.Entry<String,?> msg : sharedPrefData.entrySet())
+                messageInSharedPref += "Key = " + msg.getKey() + ", Value = " + msg.getValue() + "\n";
+
+            //reading from file saved in internal storage
+            FileInputStream fin = openFileInput("DemoAppFile");
+            int c;
+            String temp="";
+            while( (c = fin.read()) != -1){
+                temp = temp + Character.toString((char)c);
+            }
+
+            Toast.makeText(getBaseContext(),"Shared pref read : \n"+ messageInSharedPref + "\nFile read : \n " + temp ,Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e){
+        }
     }
 
     //enable root and emulator detection
